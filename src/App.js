@@ -1,28 +1,103 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
+import firebase from './config/firebase'
 import './App.css';
+import { withScriptjs, withGoogleMap, GoogleMap, Marker } from "react-google-maps"
+import { BrowserRouter as Router ,Route,Link } from 'react-router-dom' 
+import { PassThrough } from 'stream';
+import Dashboard from './dashboard';
+import ImageUpload from './imageUpload'
+
+const provider = new firebase.auth.FacebookAuthProvider();
 
 class App extends Component {
+
+  constructor() {
+    super()
+    
+    this.state = {
+      coords: null
+    }
+
+    this.updateCoords = this.updateCoords.bind(this)
+  }
+  componentDidMount() {
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        // User is signed in.
+        localStorage.setItem('User',true);
+      }
+    });
+  }
+
+  login() {
+    firebase.auth().signInWithPopup(provider).then(function (result) {
+      // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+      var token = result.credential.accessToken;
+      // The signed-in user info.
+
+      var user = result.user;
+      console.log('User...', user);
+      // ...
+    }).catch(function (error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      // The email of the user's account used.
+      var email = error.email;
+      // The firebase.auth.AuthCredential type that was used.
+      var credential = error.credential;
+      // ...
+    });
+  }
+
+  updateCoords({latitude,longitude}) {
+    this.setState({coords: {latitude,longitude}})
+  }
+
   render() {
+    const {coords} = this.state
+    const UserCheck = localStorage.getItem('User');
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+      
+      JSON.parse(UserCheck) ?
+      <div>
+      <Router>
+          <div>
+          <Link to="/dashboard">next</Link>
+          <Route exact path='/dashboard' component={Dashboard}/>
+          <Route exact path='/imageupload' component={ImageUpload}/>
+          </div>
+      </Router>
       </div>
+      : <button onClick={this.login}>Login with Facebook</button>
+      
+    
     );
   }
 }
+
+const MyMapComponent = withScriptjs(withGoogleMap((props) =>
+  <GoogleMap
+    defaultZoom={14}
+    defaultCenter={{ lat: props.coords.latitude, lng: props.coords.longitude }}
+    center={{ lat: props.coords.latitude, lng: props.coords.longitude }}
+  >
+    {props.isMarkerShown && <Marker position={{ lat:props.coords.latitude, lng: props.coords.longitude }}  
+    //Make Marker draggable
+    draggable={true}
+
+    //Get Marker Position on Drag End
+    onDragEnd={(position) =>
+      {
+        console.log('Latitude',position.latLng.lat(),'Longitude',position.latLng.lng())
+        props.updateCoords({latitude: position.latLng.lat(), longitude: position.latLng.lng()})
+    }}
+    //Center Map on Drag according to Location
+    
+    />}
+  </GoogleMap>
+))
+
 
 export default App;
