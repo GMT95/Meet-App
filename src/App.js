@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import firebase from './config/firebase'
 import './App.css';
 import { withScriptjs, withGoogleMap, GoogleMap, Marker } from "react-google-maps"
 import { BrowserRouter as Router ,Route,Link } from 'react-router-dom' 
-import { PassThrough } from 'stream';
-import Dashboard from './dashboard';
-import ImageUpload from './imageUpload'
+import Dashboard from './components/dashboard';
+import ImageUpload from './components/imageUpload'
+import userLocation from './components/userLocation'
+import Option from './components/option'
+import { Button, Checkbox, Form, Container, Grid, Icon } from 'semantic-ui-react'
+import 'semantic-ui-css/semantic.min.css';
 
 const provider = new firebase.auth.FacebookAuthProvider();
 
@@ -64,15 +66,18 @@ class App extends Component {
       <div>
       <Router>
           <div>
-          <Link to="/dashboard">next</Link>
-          <Route exact path='/dashboard' component={Dashboard}/>
-          <Route exact path='/imageupload' component={ImageUpload}/>
+            <Link to="/dashboard">next</Link>
+            <Route exact path='/dashboard' component={Dashboard}/>
+            <Route exact path='/imageupload' component={ImageUpload}/>
+            <Route exact path='/options' component={Option}/>
+            {/*<Route exact path='/map' component={userLocation}/>*/}
           </div>
       </Router>
       </div>
-      : <button onClick={this.login}>Login with Facebook</button>
+      :  <Button color='facebook' onClick={this.login}>
+          <Icon name='facebook' /> Facebook
+        </Button>
       
-    
     );
   }
 }

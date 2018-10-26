@@ -6,10 +6,13 @@
     "firebase": "^5.5.5",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
+    "react-firebase-file-uploader": "^2.4.2",
     "react-google-maps": "^9.4.5",
     "react-router-dom": "^4.3.1",
     "react-scripts": "2.0.5",
-    "simple-react-file-uploader": "^1.6.2"
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "^0.83.0",
+    "sweetalert": "^2.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
