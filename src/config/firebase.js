@@ -1,15 +1,15 @@
 import * as firebase from 'firebase';
 
-  // Initialize Firebase
-var config = {
-    apiKey: "AIzaSyBnwBYssqf0_ZsE4LjYZomP6Q3w5WmjRMU",
-    authDomain: "react-firebase-starter-75a39.firebaseapp.com",
-    databaseURL: "https://react-firebase-starter-75a39.firebaseio.com",
-    projectId: "react-firebase-starter-75a39",
-    storageBucket: "react-firebase-starter-75a39.appspot.com",
-    messagingSenderId: "256612720078"
+ // Initialize Firebase
+ var config = {
+  apiKey: "AIzaSyC_utoe1W2IUOPM--mzsxbMUtIZAy9EegE",
+  authDomain: "meetapp-9aa2c.firebaseapp.com",
+  databaseURL: "https://meetapp-9aa2c.firebaseio.com",
+  projectId: "meetapp-9aa2c",
+  storageBucket: "meetapp-9aa2c.appspot.com",
+  messagingSenderId: "862496048029"
 };
-  
 firebase.initializeApp(config);
+
 
 export default firebase;
