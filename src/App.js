@@ -6,6 +6,7 @@ import { BrowserRouter as Router ,Route,Link } from 'react-router-dom'
 import Dashboard from './components/dashboard';
 import ImageUpload from './components/imageUpload'
 import userLocation from './components/userLocation'
+import MainDashboard from './components/mainDashboard'
 import Option from './components/option'
 import { Button, Checkbox, Form, Container, Grid, Icon } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
@@ -71,6 +72,7 @@ class App extends Component {
             <Route exact path='/imageupload' component={ImageUpload}/>
             <Route exact path='/options' component={Option}/>
             <Route exact path='/map' component={userLocation}/>
+            <Route exact path='/home' component={MainDashboard}/>
           </div>
       </Router>
       </div>

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { GoogleMap, Marker, withGoogleMap, withScriptjs } from "react-google-maps";
 import {Button} from "semantic-ui-react";
 import firebase from '../config/firebase';
+import { Link } from 'react-router-dom'
 
 const Database = firebase.database();
 
@@ -77,7 +78,7 @@ class Location extends Component {
           coords={coords}
           updateCoords={this.updateCoords}
         />
-        <Button primary onClick={this.locSubmit}>Next</Button>
+        <Link to='home'><Button primary onClick={this.locSubmit}>Next</Button></Link>
         </div>
         }
         
