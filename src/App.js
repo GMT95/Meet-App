@@ -19,7 +19,8 @@ class App extends Component {
     super()
     
     this.state = {
-      coords: null
+      coords: null,
+      loggedIn: false,
     }
 
     this.updateCoords = this.updateCoords.bind(this)
@@ -29,6 +30,7 @@ class App extends Component {
       if (user) {
         // User is signed in.
         localStorage.setItem('User',true);
+        this.setState({loggedIn: true})
       }
     });
   }
@@ -59,7 +61,7 @@ class App extends Component {
   }
 
   render() {
-    const {coords} = this.state
+    const {loggedIn} = this.state
     const UserCheck = localStorage.getItem('User');
     return (
       
@@ -76,7 +78,7 @@ class App extends Component {
           </div>
       </Router>
       </div>
-      :  <Button color='facebook' onClick={this.login}>
+      : <Button color='facebook' onClick={this.login}>
           <Icon name='facebook' /> Facebook
         </Button>
       
