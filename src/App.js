@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import firebase from './config/firebase'
 import './App.css';
 import { withScriptjs, withGoogleMap, GoogleMap, Marker } from "react-google-maps"
-import { BrowserRouter as Router ,Route,Link } from 'react-router-dom' 
+import { BrowserRouter as Router ,Route,Link,Redirect } from 'react-router-dom' 
 import Dashboard from './components/dashboard';
 import ImageUpload from './components/imageUpload'
 import userLocation from './components/userLocation'
@@ -26,11 +26,12 @@ class App extends Component {
     this.updateCoords = this.updateCoords.bind(this)
   }
   componentDidMount() {
+    const that = this;
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         // User is signed in.
         localStorage.setItem('User',true);
-        this.setState({loggedIn: true})
+        that.setState({loggedIn: true})
       }
     });
   }
@@ -69,14 +70,16 @@ class App extends Component {
       <div>
       <Router>
           <div>
-            <Link to="/dashboard">next</Link>
+            {/* <Link to="/dashboard">next</Link> */}
             <Route exact path='/dashboard' component={Dashboard}/>
             <Route exact path='/imageupload' component={ImageUpload}/>
             <Route exact path='/options' component={Option}/>
             <Route exact path='/map' component={userLocation}/>
             <Route exact path='/home' component={MainDashboard}/>
+            {loggedIn && <Redirect to='/dashboard' component={Dashboard}/>}
           </div>
       </Router>
+      
       </div>
       : <Button color='facebook' onClick={this.login}>
           <Icon name='facebook' /> Facebook
