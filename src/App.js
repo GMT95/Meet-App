@@ -12,6 +12,7 @@ import { Button, Checkbox, Form, Container, Grid, Icon } from 'semantic-ui-react
 import 'semantic-ui-css/semantic.min.css';
 
 const provider = new firebase.auth.FacebookAuthProvider();
+const Database = firebase.database();
 
 class App extends Component {
 
@@ -21,6 +22,7 @@ class App extends Component {
     this.state = {
       coords: null,
       loggedIn: false,
+      initalSetup: false
     }
 
     this.updateCoords = this.updateCoords.bind(this)
@@ -31,9 +33,24 @@ class App extends Component {
       if (user) {
         // User is signed in.
         localStorage.setItem('User',true);
-        that.setState({loggedIn: true})
+        that.setState({loggedIn: true});
+        const userId = firebase.auth().currentUser.uid
+        Database.ref(`/options/${userId}`).on('value',(snapshot) => {
+          console.log(snapshot.val());
+        })
+        Database.ref(`/profileImages/${userId}`).on('value',(snapshot) => {
+          console.log(snapshot.val());
+        })
+        Database.ref(`/userDetails/${userId}`).on('value',(snapshot) => {
+          console.log(snapshot.val());
+        })
+        Database.ref(`/userLoc/${userId}`).on('value',(snapshot) => {
+          that.setState({initalSetup: true})
+        })
+      } else {
+        console.log('Not logged IN')
       }
-    });
+      });
   }
 
   login() {
@@ -62,7 +79,7 @@ class App extends Component {
   }
 
   render() {
-    const {loggedIn} = this.state
+    const {loggedIn,initalSetup} = this.state
     const UserCheck = localStorage.getItem('User');
     return (
       
@@ -70,13 +87,15 @@ class App extends Component {
       <div>
       <Router>
           <div>
-            {/* <Link to="/dashboard">next</Link> */}
+            {/* <Link to="/dashboard">next</Link>n */}
             <Route exact path='/dashboard' component={Dashboard}/>
             <Route exact path='/imageupload' component={ImageUpload}/>
             <Route exact path='/options' component={Option}/>
             <Route exact path='/map' component={userLocation}/>
             <Route exact path='/home' component={MainDashboard}/>
-            {loggedIn && <Redirect to='/dashboard' component={Dashboard}/>}
+            {loggedIn && initalSetup ?  
+            <Redirect to='/home' component={MainDashboard}/> : 
+            <Redirect to='/dashboard' component={Dashboard}/>}
           </div>
       </Router>
       

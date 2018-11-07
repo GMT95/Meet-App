@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { Button, Card, Image, Icon } from 'semantic-ui-react'
+import { Button, Card, Image, Icon, Grid, GridColumn } from 'semantic-ui-react'
 import Cards, { Card as SCard } from 'react-swipe-deck'
 import '../App.css';
 import firebase from '../config/firebase'
 
-const Database = firebase.database();
+//const Database = firebase.database();
 // const userId = firebase.auth().currentUser.uid;
 
 // const optionsRef = Database.ref(`/options/${userId}`)
@@ -16,7 +16,8 @@ const MyCard =  (props) => {
   
   return (
     <Card>
-    <Image src='https://react.semantic-ui.com/images/avatar/large/matthew.png' />
+    {/* <Image src='https://react.semantic-ui.com/images/avatar/large/matthew.png' /> */}
+    <Image src='https://firebasestorage.googleapis.com/v0/b/meetapp-9aa2c.appspot.com/o/images%2F668e94e5-0589-47ac-a076-ab9b7c1f2ef2.jfif?alt=media&token=ae4553fe-064c-424f-b94b-22cf09a601f4' />
     <Card.Content>
       <Card.Header>{props.header}</Card.Header>
       <Card.Meta>
@@ -78,27 +79,27 @@ class Main extends Component {
     this.setState({meeting: true})
   }
 
-  componentDidMount() {
-    firebase.auth().onAuthStateChanged(function(user) {
-      if (user) {
-        const userId = firebase.auth().currentUser.uid
-        Database.ref(`/options/${userId}`).on('value',(snapshot) => {
-          console.log(snapshot.val());
-        })
-        Database.ref(`/profileImages/${userId}`).on('value',(snapshot) => {
-          console.log(snapshot.val());
-        })
-        Database.ref(`/userDetails/${userId}`).on('value',(snapshot) => {
-          console.log(snapshot.val());
-        })
-        Database.ref(`/userLoc/${userId}`).on('value',(snapshot) => {
-          console.log(snapshot.val());
-        })
-      } else {
-        console.log('Not logged IN')
-      }
-    });
-  }
+  // componentDidMount() {
+  //   firebase.auth().onAuthStateChanged(function(user) {
+  //     if (user) {
+  //       const userId = firebase.auth().currentUser.uid
+  //       Database.ref(`/options/${userId}`).on('value',(snapshot) => {
+  //         console.log(snapshot.val());
+  //       })
+  //       Database.ref(`/profileImages/${userId}`).on('value',(snapshot) => {
+  //         console.log(snapshot.val());
+  //       })
+  //       Database.ref(`/userDetails/${userId}`).on('value',(snapshot) => {
+  //         console.log(snapshot.val());
+  //       })
+  //       Database.ref(`/userLoc/${userId}`).on('value',(snapshot) => {
+  //         console.log(snapshot.val());
+  //       })
+  //     } else {
+  //       console.log('Not logged IN')
+  //     }
+  //   });
+  // }
   
   render() {
     const {meeting} = this.state;
@@ -106,8 +107,15 @@ class Main extends Component {
     return (
     !meeting ? 
     <div className="App">
-    <h1>You have not done any meetings yet</h1>
-    <Button primary onClick={this.startMeeting}><i>Start a meeting</i></Button>
+    <Grid.Row columns={5}>
+    <Grid.Column>
+    <Button color='red'>Logout</Button>
+    </Grid.Column>
+    </Grid.Row>
+    <Grid.Row columns={2}>
+    <Grid.Column ><h1>You have not done any meetings yet</h1></Grid.Column>
+    <Grid.Column><Button primary onClick={this.startMeeting}><i>Start a meeting</i></Button></Grid.Column>
+    </Grid.Row>
     </div> :
     <div className="App">
       <Wrapper onEnd={this.onCardEnd}/>
