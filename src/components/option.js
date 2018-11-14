@@ -32,7 +32,8 @@ class Option extends Component {
     } else {
       const userId = firebase.auth().currentUser.uid;
       Database.ref(`/options/${userId}`).set({
-        data: data
+        data: data,
+        uid: firebase.auth().currentUser.uid
       })
 
     }

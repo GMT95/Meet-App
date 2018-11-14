@@ -1,74 +1,28 @@
 import React, { Component } from 'react';
-import { Button, Card, Image, Icon, Grid, GridColumn } from 'semantic-ui-react'
-import Cards, { Card as SCard } from 'react-swipe-deck'
+import { Button, Card, Image, Icon, Grid} from 'semantic-ui-react'
 import '../App.css';
 import firebase from '../config/firebase'
+import UserCards from './Card'
 
-//const Database = firebase.database();
-// const userId = firebase.auth().currentUser.uid;
+
 
 // const optionsRef = Database.ref(`/options/${userId}`)
 // optionsRef.on('value',(snapshot) => {
 //   console.log(snapshot);
 // })
 
-const MyCard =  (props) => {
-  
-  return (
-    <Card>
-    {/* <Image src='https://react.semantic-ui.com/images/avatar/large/matthew.png' /> */}
-    <Image src='https://firebasestorage.googleapis.com/v0/b/meetapp-9aa2c.appspot.com/o/images%2F668e94e5-0589-47ac-a076-ab9b7c1f2ef2.jfif?alt=media&token=ae4553fe-064c-424f-b94b-22cf09a601f4' />
-    <Card.Content>
-      <Card.Header>{props.header}</Card.Header>
-      <Card.Meta>
-        <span className='date'>@Matts</span>
-      </Card.Meta>
-    </Card.Content>
-    <Card.Content extra>
-        <div className='ui two buttons'>
-          <Button basic color='green'>
-          <Icon name='check' />
-          </Button>
-          <Button basic color='red'>
-           <Icon name="close" />
-          </Button>
-        </div>
-      </Card.Content>
-  </Card>
-  );
-}
-
-const data = ['Alexandre', 'Thomas', 'Lucien']
-
-
-
-const Wrapper = (props) => {
-  return (
-	  
-    <Cards onEnd={props.onEnd} className='master-root' size= {[300, 500]}> 
-        {data.map(item => 
-          <SCard 
-            onSwipeLeft={() => console.log('Left')} 
-            onSwipeRight={() => console.log('right')}
-            //size= {[300, 500]}
-            >
-            <MyCard header={item} style={{position: 'relative', overflow: 'hidden', width: 300, height: 500}}/>
-          </SCard>
-        )}
-      </Cards>
-    
-  )
-}
 
 class Main extends Component {
   constructor() {
     super();
     this.state = {
-      meeting: false
+      meeting: false,
+      currentUserLocation: []
     }
-
+    this.startMeeting = this.startMeeting.bind(this);
     this.startMeeting = this.startMeeting.bind(this);
     this.onCardEnd = this.onCardEnd.bind(this);
+    this.getUserLocation = this.getUserLocation.bind(this);
   }
 
   onCardEnd() {
@@ -100,7 +54,24 @@ class Main extends Component {
   //     }
   //   });
   // }
+  getUserLocation() {
+    const Database = firebase.database();
+    const userId = firebase.auth().currentUser.uid;
+    const {currentUserLocation} = this.state;
+    Database.ref(`/userLoc/${userId}`).on('value',(location) => {
+      console.log('CL-->',location.val())
+      currentUserLocation.push(location.val().latitude)
+      currentUserLocation.push(location.val().longitude)
+      //currentUserLocation.push('adasdada')
+    })
+    console.log(currentUserLocation)
+    this.setState({currentUserLocation: currentUserLocation })
+  }
   
+  componentDidMount() {
+    this.getUserLocation()
+  }
+
   render() {
     const {meeting} = this.state;
     
@@ -118,7 +89,8 @@ class Main extends Component {
     </Grid.Row>
     </div> :
     <div className="App">
-      <Wrapper onEnd={this.onCardEnd}/>
+      {/* <Wrapper onEnd={this.onCardEnd}/> */}
+      <UserCards onEnd={this.onCardEnd} location={this.state.currentUserLocation}/>
     </div>
     )
   }

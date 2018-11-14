@@ -59,7 +59,8 @@ class Location extends Component {
     const userId = firebase.auth().currentUser.uid;
     Database.ref(`/userLoc/${userId}`).set({
       latitude: coords.latitude,
-      longitude: coords.longitude
+      longitude: coords.longitude,
+      uid: firebase.auth().currentUser.uid
     })
   }
 

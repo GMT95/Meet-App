@@ -39,7 +39,8 @@ class Image extends Component {
     const arrToPush = this.state.avatarURL
     const userId = firebase.auth().currentUser.uid;
     Database.ref(`/profileImages/${userId}`).push({
-      profilePictures: arrToPush
+      profilePictures: arrToPush,
+      uid: firebase.auth().currentUser.uid
     })
   }
 

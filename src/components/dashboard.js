@@ -23,7 +23,8 @@ class Dashboard extends Component {
     const userId = firebase.auth().currentUser.uid;
     Database.ref(`/userDetails/${userId}`).push({
       Nickname: nickname,
-      PhoneNumber: phoneNumber
+      PhoneNumber: phoneNumber,
+      uid: firebase.auth().currentUser.uid
     })
 
 

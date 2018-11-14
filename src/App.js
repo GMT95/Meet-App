@@ -45,7 +45,9 @@ class App extends Component {
           console.log(snapshot.val());
         })
         Database.ref(`/userLoc/${userId}`).on('value',(snapshot) => {
+          if(snapshot.val() !== null) { 
           that.setState({initalSetup: true})
+          }
         })
       } else {
         console.log('Not logged IN')
