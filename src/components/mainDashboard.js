@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Button, Card, Image, Icon, Grid} from 'semantic-ui-react'
 import '../App.css';
+import _ from 'lodash'
 import firebase from '../config/firebase'
 import UserCards from './Card'
 
@@ -17,12 +18,13 @@ class Main extends Component {
     super();
     this.state = {
       meeting: false,
-      currentUserLocation: []
+      currentUserLocation: [],
+      currentUserObject: {}
     }
     this.startMeeting = this.startMeeting.bind(this);
     this.startMeeting = this.startMeeting.bind(this);
     this.onCardEnd = this.onCardEnd.bind(this);
-    this.getUserLocation = this.getUserLocation.bind(this);
+    this.getUserLocationAndChoice = this.getUserLocationAndChoice.bind(this);
   }
 
   onCardEnd() {
@@ -54,7 +56,7 @@ class Main extends Component {
   //     }
   //   });
   // }
-  getUserLocation() {
+  getUserLocationAndChoice() {
     const Database = firebase.database();
     const userId = firebase.auth().currentUser.uid;
     const {currentUserLocation} = this.state;
@@ -64,12 +66,18 @@ class Main extends Component {
       currentUserLocation.push(location.val().longitude)
       //currentUserLocation.push('adasdada')
     })
+    Database.ref(`/options/${userId}`).on('value',(option) => {
+      console.log('Option-->:)',option.val().data)
+      this.setState({currentUserObject: option.val().data})
+      
+
+    })
     console.log(currentUserLocation)
     this.setState({currentUserLocation: currentUserLocation })
   }
   
   componentDidMount() {
-    this.getUserLocation()
+    this.getUserLocationAndChoice()
   }
 
   render() {
@@ -90,10 +98,11 @@ class Main extends Component {
     </div> :
     <div className="App">
       {/* <Wrapper onEnd={this.onCardEnd}/> */}
-      <UserCards onEnd={this.onCardEnd} location={this.state.currentUserLocation}/>
+      <UserCards onEnd={this.onCardEnd} location={this.state.currentUserLocation} choices={this.state.currentUserObject}/>
     </div>
     )
   }
 }
 
 export default Main;
+

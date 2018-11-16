@@ -7,17 +7,18 @@ import geofire from "geofire";
 
 const Database = firebase.database();
 const data = ['Talha','is','Handsome']
+const masterUserObject = [];
 
 const MyCard =  (props) => {
-
+  console.log('masterUserObject',masterUserObject)
   return (
     <Card>
       {/* <Image src='https://react.semantic-ui.com/images/avatar/large/matthew.png' /> */}
-      <Image src='https://firebasestorage.googleapis.com/v0/b/meetapp-9aa2c.appspot.com/o/images%2Fac814ea3-bd57-46db-9dbc-f26dbb52134f.jfif?alt=media&token=511692d1-da93-4068-a8e3-af32135af87a' />
+      <Image src={props.header.pics[0]} />
       <Card.Content>
-        <Card.Header>{props.header}</Card.Header>
+        <Card.Header>{props.header.nickName}</Card.Header>
         <Card.Meta>
-          <span className='date'>@Matts</span>
+        <span className='date'>{props.header.phoneNumber}</span>
         </Card.Meta>
       </Card.Content>
       <Card.Content extra>
@@ -43,55 +44,96 @@ class UserCards extends Component {
       loc: [],
       details: [],
       options: [],
-      images: []
+      images: [],
+      distance: 0,
+      choiceMatch: false,
+      
 
     }
 
   }
 
-  fetchUsers() {
-    const {loc,options,images,details,location} = this.state
-    const USER = firebase.auth().currentUser.uid
+  convertToArray(userObj) {
+    let anotherArray = [];
+    let newArray = Object.keys(userObj)
 
-    console.log('Current User Location -->',location)
+    newArray.map((value) => {
+      if(userObj[value] === true) {
+      anotherArray.push(value)
+      }
+    })
+    return anotherArray;
+  }
+
+  fetchUsers() {
+    const {loc,options,images,details,location,choices,choiceMatch} = this.state
+    const USER = firebase.auth().currentUser.uid
+    const thisUserChoice = this.convertToArray(choices)
+    let otherUserChoice;
+    var otherUserPictures;
+    var otherUserDetails;
+
+    console.log('Current User Location,Choice -->',location,choices)
+    Database.ref('/options').on('child_added',(chois) => {
+      if(chois.val().uid !== USER) {
+        otherUserChoice = this.convertToArray(chois.val().data)
+        console.log(otherUserChoice,'******',thisUserChoice)
+        this.setState({choiceMatch: thisUserChoice.some(value => otherUserChoice.includes(value))})
+        
+      }
+    })
+
     Database.ref('/userLoc').on('child_added', (loctn) => {
       console.log(loctn.val().uid,'ONLY UID')
       // var key = Object.keys(loctn.val());
       // console.log(key)
       if(loctn.val().uid !== USER) {
+       
+
+
         loc.push(loctn.val())
         console.log('loc --> ',loc)
         let otherUserLocation = [loctn.val().latitude,loctn.val().longitude]
         let distance = geofire.distance(location,otherUserLocation).toFixed(3)
         console.log('distance -->> ',distance)
+        if(distance <= 5 && this.state.choiceMatch === true) {
+          Database.ref(`/profileImages/${loctn.val().uid}`).on('child_added', (userImages) => {
+          
+          //console.log(userImages.val())
+          //if(userImages.val().uid !== USER) {
+          otherUserPictures =  userImages.val().profilePictures
+          console.log('Range User images -->',otherUserPictures)
+          //}  
+                 
+         })
+
+          Database.ref('/userDetails').on('child_added', (userDetails) => {
+           userDetails.forEach((childDetails) => {
+           console.log(childDetails.val())
+           if(childDetails.val().uid !== USER) {
+           otherUserDetails = childDetails.val()
+           console.log('details -->',otherUserDetails)
+           const userObjct = { 
+                            uid: otherUserDetails.uid, 
+                            nickName: otherUserDetails.Nickname, 
+                            phoneNumber: otherUserDetails.PhoneNumber,
+                            pics: otherUserPictures
+                          }
+          masterUserObject.push(userObjct)
+          console.log(masterUserObject)
+          }
+
+          })
+        })
+
+
+
+          
+        }
       } 
     })
-    Database.ref('/options').on('child_added', (userOptions) => {
-      console.log(userOptions.val())
-      if(userOptions.val().uid !== USER) {
-        options.push(userOptions.val())
-        console.log('options -->',options)
-      }  
-    })
-    Database.ref('/profileImages').on('child_added', (userImages) => {
-      userImages.forEach((childImages) => {
-        console.log(childImages.val())
-        if(childImages.val().uid !== USER) {
-          images.push(childImages.val())
-          console.log('images -->',images)
-        }  
-      })
-    })
-    Database.ref('/userDetails').on('child_added', (userDetails) => {
-      userDetails.forEach((childDetails) => {
-        console.log(childDetails.val())
-        if(childDetails.val().uid !== USER) {
-          details.push(childDetails.val())
-          console.log('details -->',details)
-        }
-
-      })
-    })
+    
+    
   }
 
 
@@ -101,7 +143,7 @@ class UserCards extends Component {
 
   render() {
     return <Cards onEnd={this.props.onEnd} className='master-root' size= {[400, 600]}>
-      {data.map(item =>
+      {masterUserObject.map(item =>
         <SCard
           onSwipeLeft={() => console.log('Left')}
           onSwipeRight={() => console.log('right')}
@@ -109,6 +151,7 @@ class UserCards extends Component {
         >
           <MyCard header={item} style={{position: 'relative', overflow: 'hidden', width: 400, height: 600}}/>
         </SCard>
+      
       )}
     </Cards>
   }
