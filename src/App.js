@@ -7,6 +7,7 @@ import Dashboard from './components/dashboard';
 import ImageUpload from './components/imageUpload'
 import userLocation from './components/userLocation'
 import MainDashboard from './components/mainDashboard'
+import MeetScreen from './components/Meetscreen';
 import Option from './components/option'
 import { Button, Checkbox, Form, Container, Grid, Icon } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
@@ -95,6 +96,7 @@ class App extends Component {
             <Route exact path='/options' component={Option}/>
             <Route exact path='/map' component={userLocation}/>
             <Route exact path='/home' component={MainDashboard}/>
+            <Route exact path='/meetscreen' component={MeetScreen}/>
             {loggedIn && initalSetup ?  
             <Redirect to='/home' component={MainDashboard}/> : 
             <Redirect to='/dashboard' component={Dashboard}/>}

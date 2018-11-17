@@ -8,13 +8,39 @@ import geofire from "geofire";
 const Database = firebase.database();
 const data = ['Talha','is','Handsome']
 const masterUserObject = [];
-
+var USER_ID
 const MyCard =  (props) => {
-  console.log('masterUserObject',masterUserObject)
+
   return (
     <Card>
       {/* <Image src='https://react.semantic-ui.com/images/avatar/large/matthew.png' /> */}
-      <Image src={props.header.pics[0]} />
+      <Image src='https://firebasestorage.googleapis.com/v0/b/meetapp-9aa2c.appspot.com/o/images%2Fac814ea3-bd57-46db-9dbc-f26dbb52134f.jfif?alt=media&token=511692d1-da93-4068-a8e3-af32135af87a' size='large' />
+      <Card.Content>
+        <Card.Header>{props.header}</Card.Header>
+        <Card.Meta>
+        <span className='date'>@Matts</span>
+        </Card.Meta>
+      </Card.Content>
+      <Card.Content extra>
+        <div className='ui two buttons'>
+          <Button basic color='red'>
+            <Icon name="close" />
+          </Button>
+          <Button basic color='green'>
+            <Icon name='check' />
+          </Button>
+        </div>
+      </Card.Content>
+    </Card>
+  );
+}
+
+const MyCard2 =  (props) => {
+
+  return (
+    <Card>
+      {/* <Image src='https://react.semantic-ui.com/images/avatar/large/matthew.png' /> */}
+      <Image src={props.header.pics[0]} size='large'/>
       <Card.Content>
         <Card.Header>{props.header.nickName}</Card.Header>
         <Card.Meta>
@@ -23,11 +49,11 @@ const MyCard =  (props) => {
       </Card.Content>
       <Card.Content extra>
         <div className='ui two buttons'>
-          <Button basic color='green'>
-            <Icon name='check' />
-          </Button>
           <Button basic color='red'>
             <Icon name="close" />
+          </Button>
+          <Button basic color='green'>
+            <Icon name='check' />
           </Button>
         </div>
       </Card.Content>
@@ -47,6 +73,7 @@ class UserCards extends Component {
       images: [],
       distance: 0,
       choiceMatch: false,
+      fakeUser: true
       
 
     }
@@ -68,6 +95,7 @@ class UserCards extends Component {
   fetchUsers() {
     const {loc,options,images,details,location,choices,choiceMatch} = this.state
     const USER = firebase.auth().currentUser.uid
+    USER_ID = USER
     const thisUserChoice = this.convertToArray(choices)
     let otherUserChoice;
     var otherUserPictures;
@@ -83,78 +111,105 @@ class UserCards extends Component {
       }
     })
 
-    Database.ref('/userLoc').on('child_added', (loctn) => {
-      console.log(loctn.val().uid,'ONLY UID')
-      // var key = Object.keys(loctn.val());
-      // console.log(key)
-      if(loctn.val().uid !== USER) {
-       
-
-
-        loc.push(loctn.val())
-        console.log('loc --> ',loc)
-        let otherUserLocation = [loctn.val().latitude,loctn.val().longitude]
-        let distance = geofire.distance(location,otherUserLocation).toFixed(3)
-        console.log('distance -->> ',distance)
-        if(distance <= 5 && this.state.choiceMatch === true) {
-          Database.ref(`/profileImages/${loctn.val().uid}`).on('child_added', (userImages) => {
-          
-          //console.log(userImages.val())
-          //if(userImages.val().uid !== USER) {
-          otherUserPictures =  userImages.val().profilePictures
-          console.log('Range User images -->',otherUserPictures)
-          //}  
-                 
-         })
-
-          Database.ref('/userDetails').on('child_added', (userDetails) => {
-           userDetails.forEach((childDetails) => {
-           console.log(childDetails.val())
-           if(childDetails.val().uid !== USER) {
-           otherUserDetails = childDetails.val()
-           console.log('details -->',otherUserDetails)
-           const userObjct = { 
-                            uid: otherUserDetails.uid, 
-                            nickName: otherUserDetails.Nickname, 
-                            phoneNumber: otherUserDetails.PhoneNumber,
-                            pics: otherUserPictures
-                          }
-          masterUserObject.push(userObjct)
-          console.log(masterUserObject)
-          }
-
-          })
-        })
-
-
-
-          
-        }
-      } 
-    })
+Database.ref('/userLoc').on('child_added', (loctn) => {
+  console.log(loctn.val().uid,'ONLY UID')
+  // var key = Object.keys(loctn.val());
+  // console.log(key)
+  if(loctn.val().uid !== USER) {
     
-    
-  }
 
 
-  componentDidMount() {
-    this.fetchUsers();
-  }
-
-  render() {
-    return <Cards onEnd={this.props.onEnd} className='master-root' size= {[400, 600]}>
-      {masterUserObject.map(item =>
-        <SCard
-          onSwipeLeft={() => console.log('Left')}
-          onSwipeRight={() => console.log('right')}
-          //size= {[300, 500]}
-        >
-          <MyCard header={item} style={{position: 'relative', overflow: 'hidden', width: 400, height: 600}}/>
-        </SCard>
+    loc.push(loctn.val())
+    console.log('loc --> ',loc)
+    let otherUserLocation = [loctn.val().latitude,loctn.val().longitude]
+    let distance = geofire.distance(location,otherUserLocation).toFixed(3)
+    console.log('distance -->> ',distance)
+    if(distance <= 5 && this.state.choiceMatch === true) {
+      Database.ref(`/profileImages/${loctn.val().uid}`).on('child_added', (userImages) => {
       
-      )}
-    </Cards>
-  }
+      //console.log(userImages.val())
+      //if(userImages.val().uid !== USER) {
+      otherUserPictures =  userImages.val().profilePictures
+      console.log('Range User images -->',otherUserPictures)
+      //}  
+              
+      })
+
+Database.ref('/userDetails').on('child_added', (userDetails) => {
+userDetails.forEach((childDetails) => {
+console.log(childDetails.val())
+if(childDetails.val().uid !== USER) {
+otherUserDetails = childDetails.val()
+console.log('details -->',otherUserDetails)
+const userObjct = { 
+              uid: otherUserDetails.uid, 
+              nickName: otherUserDetails.Nickname, 
+              phoneNumber: otherUserDetails.PhoneNumber,
+              pics: otherUserPictures
+            }
+console.log(userObjct)
+masterUserObject.push(userObjct)
+// masterUserObject.map((item) => {
+//   console.log('map =-==========--==-==>>>',item.nickName)
+// })
+this.setState({fakeUser: false})
+}
+
+})
+})
+
+
+
+      
+    }
+  } 
+})
+
+
+}
+
+sendMeetRequest(receiverId) {
+  
+  Database.ref(`/meetings/${USER_ID}`).set({
+  senderId: USER_ID,
+  receiverId,
+  status: 'pending'
+})
+
+}
+
+
+
+componentDidMount() {
+  this.fetchUsers();
+}
+
+render() {
+  const {fakeUser} = this.state
+  return (fakeUser === true ?
+  <Cards onEnd={this.props.onEnd} className='master-root' size= {[400, 600]}>
+    {data.map(item =>
+      <SCard
+        onSwipeLeft={() => console.log('Left')}
+        onSwipeRight={this.props.sendRequest}
+        //size= {[300, 500]}
+      >
+        <MyCard header={item} style={{position: 'relative', overflow: 'hidden', width: 400, height: 600}}/>
+      </SCard>
+    )}
+  </Cards> :
+  <Cards onEnd={this.props.onEnd} className='master-root' size= {[400, 600]}>
+    {masterUserObject.map(item =>
+      <SCard
+        onSwipeLeft={() => console.log('Left')}
+        onSwipeRight={() => {this.sendMeetRequest(item.uid);}}
+        //size= {[300, 500]}
+      >
+        <MyCard2 header={item} style={{position: 'relative', overflow: 'hidden', width: 400, height: 600}}/>
+      </SCard>
+    )}
+  </Cards>)
+}
 }
 
 export default UserCards;

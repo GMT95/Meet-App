@@ -80,6 +80,7 @@ class Main extends Component {
     this.getUserLocationAndChoice()
   }
 
+  
   render() {
     const {meeting} = this.state;
     
@@ -98,7 +99,12 @@ class Main extends Component {
     </div> :
     <div className="App">
       {/* <Wrapper onEnd={this.onCardEnd}/> */}
-      <UserCards onEnd={this.onCardEnd} location={this.state.currentUserLocation} choices={this.state.currentUserObject}/>
+      <UserCards 
+      onEnd={this.onCardEnd} 
+      location={this.state.currentUserLocation} 
+      choices={this.state.currentUserObject}
+      
+      />
     </div>
     )
   }
