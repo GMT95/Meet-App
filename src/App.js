@@ -99,9 +99,9 @@ class App extends Component {
             <Route exact path='/meetscreen' component={MeetScreen}/>
             {loggedIn && initalSetup ?  
             <Redirect to='/home' component={MainDashboard}/> : 
-            <Redirect to='/dashboard' component={Dashboard}/>}
+            <Redirect to='/dashboard' component={Dashboard}/>} 
           </div>
-      </Router>
+      </Router>            
       
       </div>
       : <Button color='facebook' onClick={this.login}>

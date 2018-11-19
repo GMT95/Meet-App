@@ -4,11 +4,16 @@ import '../App.css';
 import { Button, Card, Image, Icon, Grid, GridColumn } from 'semantic-ui-react'
 import firebase from '../config/firebase'
 import geofire from "geofire";
+import MeetScreen from './Meetscreen';
+
 
 const Database = firebase.database();
 const data = ['Talha','is','Handsome']
 const masterUserObject = [];
 var USER_ID
+
+
+
 const MyCard =  (props) => {
 
   return (
@@ -73,7 +78,9 @@ class UserCards extends Component {
       images: [],
       distance: 0,
       choiceMatch: false,
-      fakeUser: true
+      fakeUser: true,
+      meetScr: false,
+      meetScrItem: null
       
 
     }
@@ -185,31 +192,35 @@ componentDidMount() {
 }
 
 render() {
-  const {fakeUser} = this.state
+  const {fakeUser,meetScr} = this.state
   return (fakeUser === true ?
   <Cards onEnd={this.props.onEnd} className='master-root' size= {[400, 600]}>
     {data.map(item =>
       <SCard
         onSwipeLeft={() => console.log('Left')}
-        onSwipeRight={this.props.sendRequest}
+        onSwipeRight={() => console.log('Right')}
         //size= {[300, 500]}
       >
         <MyCard header={item} style={{position: 'relative', overflow: 'hidden', width: 400, height: 600}}/>
       </SCard>
     )}
   </Cards> :
-  <Cards onEnd={this.props.onEnd} className='master-root' size= {[400, 600]}>
-    {masterUserObject.map(item =>
-      <SCard
-        onSwipeLeft={() => console.log('Left')}
-        onSwipeRight={() => {this.sendMeetRequest(item.uid);}}
-        //size= {[300, 500]}
-      >
-        <MyCard2 header={item} style={{position: 'relative', overflow: 'hidden', width: 400, height: 600}}/>
-      </SCard>
-    )}
-  </Cards>)
-}
+  <MeetScreen/>
+  // meetScr === true ?
+  // <div><MeetScreen/></div> :
+  // <Cards onEnd={this.props.onEnd} className='master-root' size= {[400, 600]}>
+  //   {masterUserObject.map(item =>
+  //     <SCard
+  //       onSwipeLeft={() => console.log('Left')}
+  //       onSwipeRight={() => this.setState({meetScr: true})}
+  //       //size= {[300, 500]}
+  //       //Item props se MeetScreen wale component ko dedo
+  //     >
+  //       <MyCard2 header={item} style={{position: 'relative', overflow: 'hidden', width: 400, height: 600}}/>
+  //     </SCard>
+  //   )}
+  // </Cards>
+)}
 }
 
 export default UserCards;

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Button, Card, Image, Icon, Grid} from 'semantic-ui-react'
 import '../App.css';
-import _ from 'lodash'
+import _ from 'lodash';
 import firebase from '../config/firebase'
 import UserCards from './Card'
 
